@@ -358,11 +358,6 @@ export default {
         this.$nextTick(() => {
           this.$refs.closeBtn.addEventListener('click', this.hideInfoWindow)
         })
-        // this.cityInfo = {
-        //   昆明: '云南省省会,西南交通中心...',
-        //   普洱: '云南省西部城市,澜沧江东岸...'
-        //   // 其他城市介绍...
-        // }
       }
     },
     hideInfoWindow () {
