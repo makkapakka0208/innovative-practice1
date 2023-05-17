@@ -4,6 +4,11 @@
     id="mapEcharts"
     style="width: 80%; height: 100%; position: absolute;"
   ></div>
+  <div v-show="showInfoWindow" id="infoWindow" class="echarts-info-label-item" >
+    <p id="infoTitle">{{cityName}}</p>
+    <p id="infoContent">{{cityInfo[cityName]}}</p>
+    <span v-show="showInfoWindow" id="closeBtn" ref="closeBtn" @click="hideInfoWindow">X</span>
+  </div>
 </template>
 
 <script>
@@ -36,6 +41,13 @@ export default {
         大理: [100.30807, 25.68461],
         保山: [100.385, 26.01412],
         怒江: [98.86329, 26.89]
+      },
+      myMap: null,
+      showInfoWindow: false,
+      cityInfo: {
+        昆明: '云南省省会,西南交通中心...',
+        普洱: '云南省西部城市,澜沧江东岸...'
+        // 其他城市介绍...
       }
     }
   },
@@ -54,7 +66,8 @@ export default {
       return res
     },
     initEcharts () {
-      const myMap = echarts.init(document.getElementById('mapEcharts'))
+      this.myMap = echarts.init(document.getElementById('mapEcharts'))
+      // const myMap = echarts.init(document.getElementById('mapEcharts'))
       const option = {
         title: {
           text: '全省调查图像数据总览',
@@ -320,7 +333,50 @@ export default {
           }
         ]
       }
-      myMap.setOption(option)
+      this.myMap.setOption(option)
+      this.myMap.on('click', (params) => {
+        if (params.target !== 'infoWindow') {
+          const cityName = params.name
+          this.showCityInfo(cityName)// 传入cityName显示信息
+        } else {
+          this.hideInfoWindow()
+        }
+      })
+    },
+    showCityInfo (name) {
+      if (this.cityInfo[name]) {
+        this.showInfoWindow = true
+        this.cityName = name
+        this.$nextTick(() => {
+          this.$refs.closeBtn.addEventListener('click', this.hideInfoWindow)
+        })
+        // this.cityInfo = {
+        //   昆明: '云南省省会,西南交通中心...',
+        //   普洱: '云南省西部城市,澜沧江东岸...'
+        //   // 其他城市介绍...
+        // }
+      }
+    },
+    hideInfoWindow () {
+      this.showInfoWindow = false
+    },
+    positionInfoWindow (e) {
+      const mapDOM = document.getElementById('mapEcharts')
+      const clickPosition = e.event.clientX - mapDOM.offsetLeft + 'px' +
+        ' ' +
+        e.event.clientY - mapDOM.offsetTop + 'px'
+      const position = clickPosition.split(' ')
+      const mapSize = [mapDOM.clientWidth, mapDOM.clientHeight]
+      const infoSize = [320, 240]
+
+      let infoLeft = position[0] - infoSize[0] / 2
+      let infoTop = position[1] - infoSize[1]
+
+      infoLeft = Math.max(0, Math.min(infoLeft, mapSize[0] - infoSize[0]))
+      infoTop = Math.max(0, Math.min(infoTop, mapSize[1] - infoSize[1]))
+
+      this.$el.style.left = infoLeft + 'px'
+      this.$el.style.top = infoTop + 'px'
     }
   },
   mounted () {
@@ -329,7 +385,39 @@ export default {
         this.initEcharts()
       }, 100)
     })
+    // 点击事件中调用 positionInfoWindow 方法
+    this.map.on('click', this.positionInfoWindow)
   }
 }
 </script>
-<style scoped></style>
+<style scoped>
+#infoWindow {
+  position: absolute;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #fff;
+  padding: 20px;
+  margin-top: 10px;
+  min-width: 200px;
+  max-height: 400px;
+  overflow-y: scroll;
+}
+
+#infoTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#infoWindow:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-top-color: #fff;
+  top: 100%;
+  left: 10px;
+}
+</style>

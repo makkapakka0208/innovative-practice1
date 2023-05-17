@@ -4,7 +4,8 @@
     <div id="main">
       <MyMap></MyMap>
     </div>
-    <div id="rightbar"></div>
+    <div id="rightbar">
+      </div>
     <div id="footer"></div>
   </div>
 </template>
@@ -52,7 +53,16 @@ body {
   grid-area: main;
 }
 #rightbar {
+  display:flex;
+  justify-content: space-between; /*两端对齐*/
+  margin:5px;
   grid-area: right;
+  text-align: center;
+  color: #bde4ff;
+  font-size: 1rem;
+  font-weight: bold;
+  line-height: 5rem;
+  letter-spacing: 0.5rem;
 }
 #footer {
   grid-area: footer;
@@ -73,4 +83,5 @@ body {
   grid-gap: 10px;
   height: 100%;
 }
+
 </style>
