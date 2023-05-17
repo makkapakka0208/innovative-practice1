@@ -4,10 +4,10 @@
     id="mapEcharts"
     style="width: 80%; height: 100%; position: absolute;"
   ></div>
-  <div v-show="showInfoWindow" id="infoWindow" class="echarts-info-label-item" >
+  <div v-show="showInfoWindow" id="infoWindow" style="position: absolute;width: 200px;height: 80px;top: 0;left: 0;background: #fff;z-index: 1000;">
     <p id="infoTitle">{{cityName}}</p>
     <p id="infoContent">{{cityInfo[cityName]}}</p>
-    <span v-show="showInfoWindow" id="closeBtn" ref="closeBtn" @click="hideInfoWindow">X</span>
+    <span v-show="showInfoWindow" id="closeBtn" class="close-btn" ref="closeBtn" @click="hideInfoWindow">X</span>
   </div>
 </template>
 
@@ -46,7 +46,15 @@ export default {
       showInfoWindow: false,
       cityInfo: {
         昆明: '云南省省会,西南交通中心...',
-        普洱: '云南省西部城市,澜沧江东岸...'
+        普洱: '云南省西部城市,澜沧江东岸...',
+        红河: '红河',
+        文山: '文山',
+        临沧: '临沧',
+        瑞丽: '瑞丽',
+        昭通: '昭通',
+        大理: '大理',
+        保山: '保山',
+        怒江: '怒江'
         // 其他城市介绍...
       }
     }
@@ -359,24 +367,6 @@ export default {
     },
     hideInfoWindow () {
       this.showInfoWindow = false
-    },
-    positionInfoWindow (e) {
-      const mapDOM = document.getElementById('mapEcharts')
-      const clickPosition = e.event.clientX - mapDOM.offsetLeft + 'px' +
-        ' ' +
-        e.event.clientY - mapDOM.offsetTop + 'px'
-      const position = clickPosition.split(' ')
-      const mapSize = [mapDOM.clientWidth, mapDOM.clientHeight]
-      const infoSize = [320, 240]
-
-      let infoLeft = position[0] - infoSize[0] / 2
-      let infoTop = position[1] - infoSize[1]
-
-      infoLeft = Math.max(0, Math.min(infoLeft, mapSize[0] - infoSize[0]))
-      infoTop = Math.max(0, Math.min(infoTop, mapSize[1] - infoSize[1]))
-
-      this.$el.style.left = infoLeft + 'px'
-      this.$el.style.top = infoTop + 'px'
     }
   },
   mounted () {
@@ -385,8 +375,6 @@ export default {
         this.initEcharts()
       }, 100)
     })
-    // 点击事件中调用 positionInfoWindow 方法
-    this.map.on('click', this.positionInfoWindow)
   }
 }
 </script>
@@ -409,15 +397,26 @@ export default {
   font-weight: bold;
   margin-bottom: 10px;
 }
-
-#infoWindow:after {
-  content: '';
+.close-btn {
   position: absolute;
-  width: 0;
-  height: 0;
-  border: 10px solid transparent;
-  border-top-color: #fff;
-  top: 100%;
-  left: 10px;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  color: #fff;
+  background-color: #333;
+  border-radius: 50%;
+  font-size: 1.2rem;
+}
+
+.close-btn::before {
+  content: '\2715';
+  font-size: 1.4rem;
+}
+
+.close-btn:hover {
+  background-color: #555;
+  cursor: pointer;
 }
 </style>
